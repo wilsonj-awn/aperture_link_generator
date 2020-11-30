@@ -1,0 +1,153 @@
+<html>
+    <head>
+        <title>Aperture Link Builder</title>
+
+        <style>
+            body {
+              background-color: black;
+            }
+            
+            html {
+              color: lightgrey;
+            }
+
+            .text {
+            border-color: grey;
+            background-color: black;
+            color: grey;
+            width: 300px;
+            border-radius: 10px;
+            max-width: 100%;
+            }
+
+            button {
+                background-color: black;
+                color: grey;
+            }
+
+            a {
+                color: lime;
+            }
+
+            .long {
+                width: 800px;
+            }
+        </style>
+
+    </head>
+
+    <body>
+        <h1>Aperture Link Builder</h1>
+        <!-- Customer ID -->
+        <label for="customer">Customer ID:</label><br><br>
+        <input type="text" class="text" id="customer" name="customer" placeholder="baconsecurity"><br>
+
+        <!-- List/Summ -->
+        <p>Type:</p>
+        <input type="radio" id="linkTypeList" name="linkType" value="list">
+        <label for="linkTypeList">List</label><br>
+        <input type="radio" id="linkTypeSumm" name="linkType" value="summ">
+        <label for="linkTypeSumm">Summ</label><br><br>
+        
+        <!-- type -->
+        <label for="type">Type:</label><br><br>
+        <input type="text" class="text" id="type" name="type" placeholder="awn-agent,ad-event"><br><br>
+
+        <!-- Columns -->
+        <label for="columns">Columns:</label><br><br>
+        <input type="text" class="text long" id="columns" name="columns" placeholder="user.username,host.ip"><br><br>
+
+        <!-- summColumns -->
+        <div id="summColStuff">
+            <label id="summColumsLabel" for="summColumns">Summ Columns:</label><br><br>
+            <input type="text" class="text" id="summColumns" name="summColumns" placeholder="Count=count"><br><br>
+        </div>
+
+        <!-- title -->
+        <label for="title">Title:</label><br><br>
+        <input type="text" class="text long" id="title" name="title" placeholder="Report Title"><br><br>
+
+        <!-- intro -->
+        <label for="intro">Intro:</label><br><br>
+        <input type="text" class="text long" id="intro" name="intro" placeholder="Report Intro"><br><br>
+
+        <!-- additionalParameters -->
+        <label for="additionalParameters">Additional Parameters:</label><br><br>
+        <input type="text" class="text long" id="additionalParameters" name="additionalParameters" placeholder="&ad.event.code=1234&user.username=bob"><br><br>
+
+        <!-- Button -->
+        <button onclick="read()">Create Link</button>
+
+        <p id="output">Result...</p>
+
+    </body>
+</html>
+
+
+<script>
+    // Script to show/hide buttons
+    summColStuff = document.getElementById("summColStuff")
+    
+    // Hide buttons
+    summbtn = document.getElementById("linkTypeSumm")
+    summbtn.addEventListener("click", function(){ 
+        summColStuff.style.display = "initial";     
+        });
+
+    // Show buttons
+    listbtn = document.getElementById("linkTypeList")
+    listbtn.addEventListener("click", function(){ 
+        summColStuff.style.display = "none"; 
+        });
+</script>
+
+<script>
+    const btn = document.querySelector('#calculateResult');
+
+    function read() {
+
+        // Set Variables
+        var prefix = "https://console.prod.awn/aperture/"
+        var customer = document.getElementById("customer").value + "/";
+
+        // Logic for link type
+        var linkType
+        const rbs = document.querySelectorAll('input[name="linkType"]');
+        let selectedValue;
+        for (const rb of rbs) {
+            if (rb.checked) {
+                selectedValue = rb.value;
+                linkType = selectedValue + '/';
+                break;
+            }
+        }
+
+        var type = document.getElementById("type").value + "/";
+        var columns = document.getElementById("columns").value + "/";
+
+        // summColumns
+        var summColumns 
+        if (linkType == "list/") {
+            summColumns = "";
+        } else {
+            summColumns = document.getElementById("summColumns").value + "/";
+        }
+
+        // title
+        var title = '?.title=' + document.getElementById("title").value;
+        title = title.replace(/ /g, "+");
+
+        // intro
+        var intro = '&.intro=' + document.getElementById("intro").value;
+        intro = intro.replace(/ /g, "+");
+
+        var additionalParameters = document.getElementById("additionalParameters").value;
+        
+        // Glue it all together
+        result = prefix + customer + linkType + type + columns + summColumns + title + intro + additionalParameters
+        result = "<a target=\"blank\" href=\""+result+"\">"+result+"</a>"
+
+        document.getElementById("output").innerHTML = result;
+    }
+
+</script>
